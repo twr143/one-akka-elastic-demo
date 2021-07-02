@@ -8,8 +8,8 @@ import com.sksamuel.elastic4s.requests.searches.SearchResponse
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.fields.{DateField, TextField}
-import model.Employee
-import util.{Mappable, Materializator}
+import org.iv.model._
+import org.iv.util._
 
 /**
  * Created by twr143 on 02.07.2021 at 8:33.
@@ -47,9 +47,9 @@ object ArtistIndex extends App {
   // see the section on Eventual Consistency.
   client.execute {
     bulk(
-      indexInto(indexName).fields(Materializator.toMap(em1)), //.refresh(RefreshPolicy.Immediate),
-      indexInto(indexName).fields(Materializator.toMap(em2)), //.refresh(RefreshPolicy.Immediate),
-      indexInto(indexName).fields(Materializator.toMap(em3)) //.refresh(RefreshPolicy.Immediate)
+      indexInto(indexName).fields(Materializer.toMap(em1)), //.refresh(RefreshPolicy.Immediate),
+      indexInto(indexName).fields(Materializer.toMap(em2)), //.refresh(RefreshPolicy.Immediate),
+      indexInto(indexName).fields(Materializer.toMap(em3)) //.refresh(RefreshPolicy.Immediate)
     ).refreshImmediately
   }.await
 
@@ -71,7 +71,7 @@ object ArtistIndex extends App {
   resp match {
     case failure: RequestFailure => println("We failed " + failure.error)
     case results: RequestSuccess[SearchResponse] => println(results.result.hits.hits.map(_.sourceAsMap)
-      .toList.map(Materializator.cmon[Employee]))
+      .toList.map(Materializer.cmon[Employee]))
     case results: RequestSuccess[_] => println(results.result)
   }
 

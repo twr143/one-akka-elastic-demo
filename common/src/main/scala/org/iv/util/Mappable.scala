@@ -1,4 +1,4 @@
-package util
+package org.iv.util
 
 /**
  * Created by twr143 on 02.07.2021 at 13:07.
