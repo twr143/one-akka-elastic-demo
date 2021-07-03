@@ -3,6 +3,7 @@ package org.iv
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import org.iv.model.Employee
 import spray.json.DefaultJsonProtocol
+import validation.Validator._
 
 /**
  * Created by twr143 on 03.07.2021 at 8:31.
@@ -20,4 +21,5 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val queryFormat = jsonFormat1(QueryJson)
   implicit val deleteFormat = jsonFormat1(DeleteJson)
   implicit val updateFormat = jsonFormat2(UpdateJson)
+  implicit val validationError = jsonFormat2(ValidationError)
 }

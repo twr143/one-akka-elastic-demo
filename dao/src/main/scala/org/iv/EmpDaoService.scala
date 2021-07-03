@@ -1,7 +1,5 @@
 package org.iv
-
-import com.sksamuel.elastic4s.ElasticDsl.{createIndex, deleteIndex, properties}
-import com.sksamuel.elastic4s.fields.{DateField, TextField}
+
 import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, RequestFailure, RequestSuccess, Response}
 import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.ElasticDsl._

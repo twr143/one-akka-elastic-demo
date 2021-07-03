@@ -96,11 +96,14 @@ lazy val compilerOptions = Seq(
   "-language:postfixOps",
   "-deprecation",
   "-encoding",
-  "utf8"
+  "utf8",
+  "-Yrangepos", // required by SemanticDB compiler plugin
+  "-Ywarn-unused-import" // required by `RemoveUnused` rule
 )
 
 lazy val commonSettings = Seq(
   scalacOptions ++= compilerOptions,
+  addCompilerPlugin(scalafixSemanticdb),
   resolvers ++= Seq(
     "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
     Resolver.sonatypeRepo("releases"),
