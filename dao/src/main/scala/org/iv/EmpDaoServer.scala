@@ -6,9 +6,10 @@ package org.iv
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.server.Directives
+import akka.http.scaladsl.server.{Directives, ExceptionHandler}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.{StatusCode, StatusCodes}
+import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.model.{HttpResponse,  StatusCodes}
 import org.iv.model._
 import spray.json._
 
@@ -18,33 +19,45 @@ import scala.io.StdIn
 // use it wherever json (un)marshalling is needed
 object EmpDaoServer extends Directives with JsonSupport {
   def route(service: EmpDaoService) = {
-    post {
-      concat(
-        path("create") {
-          entity(as[EmployeeJson]) { e => // will unmarshal JSON to Order
-            onSuccess(service.insert(e.toEmployee))(r => complete[String](StatusCodes.OK, r))
-          }
-        },
-        path("query") {
-          entity(as[QueryJson]) { e =>
-            onSuccess(service.queryEmployees(e.query))(r => complete[List[Employee]](StatusCodes.OK, r))
-          }
-        },
+    handleExceptions(daoServiceExceptionHandler()) {
+      post {
+        concat(
+          path("create") {
+            entity(as[EmployeeJson]) { e => // will unmarshal JSON to Order
+              onSuccess(service.insert(e.toEmployee))(r => complete[String](StatusCodes.OK, r))
+            }
+          },
+          path("query") {
+            entity(as[QueryJson]) { e =>
+              onSuccess(service.queryEmployees(e.query))(r => complete[List[Employee]](StatusCodes.OK, r))
+            }
+          },
           path("delete") {
             entity(as[DeleteJson]) { e =>
               onSuccess(service.deletebyQuery(e.query))(r => complete(StatusCodes.OK, r.toString))
             }
           },
-        path("update") {
-          entity(as[UpdateJson]) { e =>
-            onSuccess(service.updateByQuery(e.query, e.script))(r => complete(StatusCodes.OK, r.toString))
+          path("update") {
+            entity(as[UpdateJson]) { e =>
+              onSuccess(service.updateByQuery(e.query, e.script))(r => complete(StatusCodes.OK, r.toString))
+            }
           }
-        }
 
 
-      )
+        )
+      }
     }
   }
+  def daoServiceExceptionHandler(): ExceptionHandler =
+      ExceptionHandler {
+        case e: UnsupportedOperationException =>
+          complete(HttpResponse(NotImplemented, entity = e.getMessage))
+        case e: RuntimeException =>
+          extractUri { uri =>
+            println(s"Request to $uri could not be handled normally")
+            complete(HttpResponse(InternalServerError, entity = e.getMessage))
+          }
+      }
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()

@@ -4,7 +4,6 @@ import com.sksamuel.elastic4s.ElasticDsl.{createIndex, deleteIndex, properties}
 import com.sksamuel.elastic4s.fields.{DateField, TextField}
 import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, RequestFailure, RequestSuccess, Response}
 import com.sksamuel.elastic4s.http.JavaClient
-import org.iv.ArtistIndex.{client, indexName}
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.requests.delete.DeleteByQueryResponse
 import com.sksamuel.elastic4s.requests.indexes.IndexResponse
