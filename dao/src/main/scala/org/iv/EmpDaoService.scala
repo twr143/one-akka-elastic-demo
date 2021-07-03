@@ -33,7 +33,7 @@ class EmpDaoService(implicit ec: ExecutionContext) {
       indexInto(indexName).fields(Materializer.toMap(e)).refreshImmediately
     }.map { r =>
       r match {
-        case failure: RequestFailure => s"failure at insert of $e ${failure.error}"
+        case failure: RequestFailure => throw new RuntimeException(s"failure at insert of $e ${failure.error}")
         case results: RequestSuccess[IndexResponse] => results.result.result
       }
     }
