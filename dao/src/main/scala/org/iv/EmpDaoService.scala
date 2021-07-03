@@ -30,8 +30,7 @@ class EmpDaoService(implicit ec: ExecutionContext) {
 
   def insert(e: Employee): Future[String] = {
     client.execute {
-      indexInto(indexName).fields(Materializer.toMap(e) //.refresh(RefreshPolicy.Immediate),
-      ).refreshImmediately
+      indexInto(indexName).fields(Materializer.toMap(e)).refreshImmediately
     }.map { r =>
       r match {
         case failure: RequestFailure => s"failure at insert of $e ${failure.error}"

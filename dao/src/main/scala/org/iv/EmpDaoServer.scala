@@ -25,12 +25,12 @@ object EmpDaoServer extends Directives with JsonSupport {
         concat(
           path("create") {
             entity(as[EmployeeJson]) { e => // will unmarshal JSON to Order
-              onSuccess(service.insert(e.toEmployee))(r => complete[String](StatusCodes.OK, r))
+              onSuccess(service.insert(e.toEmployee))(complete(StatusCodes.OK, _))
             }
           },
           path("query") {
             entity(as[QueryJson]) { e =>
-              onSuccess(service.queryEmployees(e.query))(r => complete[List[Employee]](StatusCodes.OK, r))
+              onSuccess(service.queryEmployees(e.query))(complete(StatusCodes.OK, _))
             }
           },
           path("delete") {
