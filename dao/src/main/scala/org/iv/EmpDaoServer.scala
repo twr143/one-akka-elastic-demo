@@ -9,7 +9,8 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.{Directives, ExceptionHandler}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.model.{HttpResponse,  StatusCodes}
+import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
+import akka.stream.ConnectionException
 import org.iv.model._
 import spray.json._
 
@@ -42,8 +43,6 @@ object EmpDaoServer extends Directives with JsonSupport {
               onSuccess(service.updateByQuery(e.query, e.script))(r => complete(StatusCodes.OK, r.toString))
             }
           }
-
-
         )
       }
     }
@@ -52,11 +51,10 @@ object EmpDaoServer extends Directives with JsonSupport {
       ExceptionHandler {
         case e: UnsupportedOperationException =>
           complete(HttpResponse(NotImplemented, entity = e.getMessage))
+        case e: RuntimeException if e.getMessage.startsWith("java.net.ConnectException") =>
+            complete(HttpResponse(ServiceUnavailable, entity = "elastic unavailable"))
         case e: RuntimeException =>
-          extractUri { uri =>
-            println(s"Request to $uri could not be handled normally")
             complete(HttpResponse(InternalServerError, entity = e.getMessage))
-          }
       }
 
   def main(args: Array[String]): Unit = {
