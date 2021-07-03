@@ -1,5 +1,6 @@
 package org.iv
-
+
+
 import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, RequestFailure, RequestSuccess, Response}
 import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.ElasticDsl._
@@ -40,11 +41,10 @@ class EmpDaoService(implicit ec: ExecutionContext) {
   def queryEmployees(q: String): Future[List[Employee]] = {
     client.execute {
       search(indexName).query(q)
-    }.collect({
-      case e: RequestFailure => throw new RuntimeException(e.error.reason) //s"failure at delete by $q ${failure.error}"
+    }.collect(handleError("").orElse({
       case results: RequestSuccess[SearchResponse] => results.result.hits.hits.map(_.sourceAsMap)
         .toList.map(Materializer.cmon[Employee])
-    })
+    })).mapTo[List[Employee]]
   }
 
   def updateByQuery(q: String, script: String): Future[Long] = {
@@ -53,7 +53,7 @@ class EmpDaoService(implicit ec: ExecutionContext) {
 
   def terminateConnection() = client.close()
 
-  private def handleError[T, A](msg: String): PartialFunction[Response[T], Future[A]] = {
+  private def handleError(msg: String): PartialFunction[Response[_], Future[_]] = {
     case e: RequestFailure => throw new RuntimeException(e.error.reason)
   }
 }

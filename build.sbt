@@ -104,6 +104,7 @@ lazy val compilerOptions = Seq(
 lazy val commonSettings = Seq(
   scalacOptions ++= compilerOptions,
   addCompilerPlugin(scalafixSemanticdb),
+  addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.0" cross CrossVersion.full),
   resolvers ++= Seq(
     "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
     Resolver.sonatypeRepo("releases"),
