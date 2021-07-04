@@ -13,8 +13,6 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   final case class EmployeeJson(name: String, joined: String) {
     def toEmployee() = Employee(name, joined)
   }
-
-
   final case class QueryJson(query: String)
   final case class DeleteJson(query: String)
   final case class UpdateJson(query: String, script: String)
@@ -33,3 +31,4 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val createResponseFormat = jsonFormat1(CreateResponse)
 
 }
+object JsonSupport extends JsonSupport

@@ -13,10 +13,11 @@ import org.iv.validation.Validator
 import scala.io.StdIn
 import org.iv.JsonSupport._
 
+
 // use it wherever json (un)marshalling is needed
-object EmpDaoServer extends Directives {
-  def route(service: EmpDaoService) = {
-    handleExceptions(daoServiceExceptionHandler) {
+object EmpServer extends Directives {
+  def route(service: EmpService) = {
+    handleExceptions(serviceExceptionHandler) {
       post {
         concat(
           path("create") {
@@ -25,22 +26,22 @@ object EmpDaoServer extends Directives {
               if (errors.nonEmpty)
                 complete(BadRequest, errors)
               else
-                onSuccess(service.insert(e.toEmployee))(r => complete(OK, CreateResponse(r)))
+                onSuccess(service.create(e))(complete(_))
             }
           },
           path("query") {
             entity(as[QueryJson]) { e =>
-              onSuccess(service.queryEmployees(e.query))(recs => complete(OK, QueryResponse(recs)))
+              onSuccess(service.queryEmployees(e))(complete(_))
             }
           },
           path("delete") {
             entity(as[DeleteJson]) { e =>
-              onSuccess(service.deletebyQuery(e.query))(r => complete(OK, UpdateDeleteResponse(r)))
+              onSuccess(service.deletebyQuery(e))(complete(_))
             }
           },
           path("update") {
             entity(as[UpdateJson]) { e =>
-              onSuccess(service.updateByQ(e.query, e.script))(r => complete(OK, UpdateDeleteResponse(r)))
+              onSuccess(service.updateByQ(e))(complete(_))
             }
           }
         )
@@ -48,27 +49,24 @@ object EmpDaoServer extends Directives {
     }
   }
 
-  lazy val daoServiceExceptionHandler: ExceptionHandler =
+  lazy val serviceExceptionHandler: ExceptionHandler =
     ExceptionHandler {
       case e: UnsupportedOperationException =>
         complete(HttpResponse(NotImplemented, entity = e.getMessage))
-      case e: RuntimeException if e.getMessage.startsWith("java.net.ConnectException") =>
-        complete(HttpResponse(ServiceUnavailable, entity = "elastic unavailable"))
       case e: RuntimeException =>
-        complete(HttpResponse(InternalServerError, entity = "uncaught exc happened " + e))
+        complete(HttpResponse(InternalServerError, entity = "unknow happened " + e))
     }
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
     implicit val executionContext = system.dispatcher
-    val service = new EmpDaoService()
-    val bindingFuture = Http().newServerAt("localhost", 8081).bind(route(service))
-    println(s"Emp Dao server online at http://localhost:8081/\nPress RETURN to stop...")
+    val service = new EmpService()
+    val bindingFuture = Http().newServerAt("localhost", 8080).bind(route(service))
+    println(s"Employee server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port
       .onComplete(_ => {
-        service.terminateConnection()
         system.terminate()
       }) // and shutdown when done
   }
