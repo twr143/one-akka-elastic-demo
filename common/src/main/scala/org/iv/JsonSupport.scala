@@ -9,12 +9,18 @@ import validation.Validator._
  * Created by twr143 on 03.07.2021 at 8:31.
  */
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
-  final case class EmployeeJson(name: String, joined: String){
-    def toEmployee() = Employee(name,joined)
+
+  final case class EmployeeJson(name: String, joined: String) {
+    def toEmployee() = Employee(name, joined)
   }
+
+
   final case class QueryJson(query: String)
   final case class DeleteJson(query: String)
-  final case class UpdateJson(query: String, script:String)
+  final case class UpdateJson(query: String, script: String)
+  final case class QueryResponse(records: List[Employee])
+  final case class UpdateDeleteResponse(numRecords: Long)
+  final case class CreateResponse(result: String)
 
   implicit val employeeFormat = jsonFormat2(EmployeeJson)
   implicit val employeeBeanFormat = jsonFormat2(Employee)
@@ -22,4 +28,8 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val deleteFormat = jsonFormat1(DeleteJson)
   implicit val updateFormat = jsonFormat2(UpdateJson)
   implicit val validationError = jsonFormat2(ValidationError)
+  implicit val queryReponseFormat = jsonFormat1(QueryResponse)
+  implicit val updateDeleteResponseFormat = jsonFormat1(UpdateDeleteResponse)
+  implicit val createResponseFormat = jsonFormat1(CreateResponse)
+
 }

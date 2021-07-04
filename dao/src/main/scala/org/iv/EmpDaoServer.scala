@@ -12,7 +12,6 @@ import akka.http.scaladsl.model.HttpResponse
 import org.iv.validation.Validator
 import scala.io.StdIn
 
-
 // use it wherever json (un)marshalling is needed
 object EmpDaoServer extends Directives with JsonSupport {
   def route(service: EmpDaoService) = {
@@ -25,22 +24,22 @@ object EmpDaoServer extends Directives with JsonSupport {
               if (errors.nonEmpty)
                 complete(BadRequest, errors)
               else
-                onSuccess(service.insert(e.toEmployee))(complete(OK, _))
+                onSuccess(service.insert(e.toEmployee))(r => complete(OK, CreateResponse(r)))
             }
           },
           path("query") {
             entity(as[QueryJson]) { e =>
-              onSuccess(service.queryEmployees(e.query))(complete(OK, _))
+              onSuccess(service.queryEmployees(e.query))(recs => complete(OK, QueryResponse(recs)))
             }
           },
           path("delete") {
             entity(as[DeleteJson]) { e =>
-              onSuccess(service.deletebyQuery(e.query))(r => complete(OK, r.toString))
+              onSuccess(service.deletebyQuery(e.query))(r => complete(OK, UpdateDeleteResponse(r)))
             }
           },
           path("update") {
             entity(as[UpdateJson]) { e =>
-              onSuccess(service.updateByQuery(e.query, e.script))(r => complete(OK, r.toString))
+              onSuccess(service.updateByQ(e.query, e.script))(r => complete(OK, UpdateDeleteResponse(r)))
             }
           }
         )

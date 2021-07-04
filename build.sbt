@@ -25,8 +25,7 @@ lazy val service = project
   .settings(
     name := "service",
     settings,
-    libraryDependencies ++= commonDependencies ++ Seq(
-    )
+    libraryDependencies ++= commonDependencies ++ Seq()
   )
   .dependsOn(
     common
@@ -36,8 +35,7 @@ lazy val dao = project
   .settings(
     name := "dao",
     settings,
-    libraryDependencies ++= commonDependencies ++ Seq(deps.e4s, deps.akkaSprayJson
-    )
+    libraryDependencies ++= commonDependencies ++ Seq(deps.e4s)
   )
   .dependsOn(
     common
@@ -67,6 +65,7 @@ lazy val deps =
     val akkaSprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV
     val e4s = "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion
     val e4st = "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test"
+    val scalaReflect = "org.scala-lang" % "scala-reflect" % "2.12.10"
   }
 
 lazy val commonDependencies = Seq(
@@ -77,8 +76,8 @@ lazy val commonDependencies = Seq(
   deps.akkaStream,
   deps.scalatest % "test",
   deps.scalacheck % "test",
-  "org.scala-lang" % "scala-reflect" % "2.12.10"
-
+  deps.scalaReflect,
+  deps.akkaSprayJson
 )
 
 // SETTINGS

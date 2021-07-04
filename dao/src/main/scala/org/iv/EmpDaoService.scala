@@ -7,6 +7,7 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.requests.delete.DeleteByQueryResponse
 import com.sksamuel.elastic4s.requests.indexes.IndexResponse
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
+import com.sksamuel.elastic4s.requests.update.UpdateByQueryResponse
 import org.iv.model._
 import org.iv.util._
 
@@ -22,38 +23,40 @@ class EmpDaoService(implicit ec: ExecutionContext) {
   def insert(e: Employee): Future[String] = {
     client.execute {
       indexInto(indexName).fields(Materializer.toMap(e)).refreshImmediately
-    }.collect {
-      case e: RequestFailure => throw new RuntimeException(e.error.reason)
+    }.collect(handleError.orElse({
       case results: RequestSuccess[IndexResponse] => results.result.result
-    }
+    })).mapTo[String]
 
   }
 
   def deletebyQuery(q: String): Future[Long] = {
     client.execute {
       deleteIn(indexName).by(stringQuery(q)).refreshImmediately
-    }.collect {
-      case e: RequestFailure => throw new RuntimeException(e.error.reason) //s"failure at delete by $q ${failure.error}"
+    }.collect(handleError.orElse({
       case results: RequestSuccess[DeleteByQueryResponse] => results.result.deleted
-    }
+    })).mapTo[Long]
   }
 
   def queryEmployees(q: String): Future[List[Employee]] = {
     client.execute {
       search(indexName).query(q)
-    }.collect(handleError("").orElse({
+    }.collect(handleError.orElse({
       case results: RequestSuccess[SearchResponse] => results.result.hits.hits.map(_.sourceAsMap)
         .toList.map(Materializer.cmon[Employee])
     })).mapTo[List[Employee]]
   }
 
-  def updateByQuery(q: String, script: String): Future[Long] = {
-    throw new UnsupportedOperationException("dao updateByQuery not supported yet")
+  def updateByQ(q: String, script: String): Future[Long] = {
+    client.execute {
+      updateByQuery(indexName, stringQuery(q)).script(script)
+    }.collect(handleError.orElse({
+      case results: RequestSuccess[UpdateByQueryResponse] => results.result.updated
+    })).mapTo[Long]
   }
 
   def terminateConnection() = client.close()
 
-  private def handleError(msg: String): PartialFunction[Response[_], Future[_]] = {
+  private def handleError: PartialFunction[Response[_], Future[_]] = {
     case e: RequestFailure => throw new RuntimeException(e.error.reason)
   }
 }
