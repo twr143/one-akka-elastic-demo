@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class EmpDaoService(c: => ElasticClient, indexName: String)(implicit ec: ExecutionContext) {
   lazy val client = c
 
-  def insert(e: Employee): Future[String] = {
+  def create(e: Employee): Future[String] = {
     client.execute {
       indexInto(indexName).fields(Materializer.toMap(e)).refreshImmediately
     }.collect(handleError.orElse({

@@ -25,7 +25,7 @@ lazy val service = project
   .settings(
     name := "service",
     settings,
-    libraryDependencies ++= commonDependencies ++ Seq()
+    libraryDependencies ++=  Seq(deps.scalaMock) ++ commonDependencies
   )
   .dependsOn(
     common
@@ -50,7 +50,7 @@ lazy val deps =
     val typesafeConfigV = "1.3.1"
     val akkaHttpV = "10.2.4"
     val akkaV = "2.6.13"
-    val scalatestV = "3.0.4"
+    val scalatestV = "3.1.2"
     val scalacheckV = "1.13.5"
     val elastic4sVersion = "7.12.3"
 
@@ -68,6 +68,7 @@ lazy val deps =
     val e4s = "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion
     val e4st = "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test"
     val scalaReflect = "org.scala-lang" % "scala-reflect" % "2.12.10"
+    val scalaMock = "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0" % "test"
   }
 
 lazy val commonDependencies = Seq(

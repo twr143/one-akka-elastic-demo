@@ -60,7 +60,7 @@ object EmpServer extends Directives {
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
     implicit val executionContext = system.dispatcher
-    val service = new EmpService()
+    val service = new EmpService(Http(),"http://localhost:8081/")
     val bindingFuture = Http().newServerAt("localhost", 8080).bind(route(service))
     println(s"Employee server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
