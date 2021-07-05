@@ -17,7 +17,7 @@ import akka.http.scaladsl.model.StatusCodes._
  */
 class EmpService(implicit ec: ExecutionContext, system: ActorSystem) {
   lazy val client = Http()
-  val endpoint = "http://localhost:8081/"
+  val uri = "http://localhost:8081/"
 
   def create(e: EmployeeJson): Future[HttpResponse] =
     client.singleRequest(mkRequest(e.toJson, "create")).recover(recoverPf)
@@ -34,7 +34,7 @@ class EmpService(implicit ec: ExecutionContext, system: ActorSystem) {
   private def mkRequest(jv: JsValue, uripath: String) =
     HttpRequest(
       method = HttpMethods.POST,
-      uri = endpoint + uripath,
+      uri = uri + uripath,
       entity = HttpEntity(ContentTypes.`application/json`, jv.toString)
     )
 

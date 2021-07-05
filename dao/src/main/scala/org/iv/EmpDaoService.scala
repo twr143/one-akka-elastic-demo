@@ -1,8 +1,8 @@
 package org.iv
 
 
-import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, RequestFailure, RequestSuccess, Response}
-import com.sksamuel.elastic4s.http.JavaClient
+import com.sksamuel.elastic4s.{ElasticClient, RequestFailure, RequestSuccess, Response}
+
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.requests.delete.DeleteByQueryResponse
 import com.sksamuel.elastic4s.requests.indexes.IndexResponse
@@ -16,9 +16,8 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
  * Created by twr143 on 03.07.2021 at 7:23.
  */
-class EmpDaoService(implicit ec: ExecutionContext) {
-  lazy val client = ElasticClient(JavaClient(ElasticProperties(s"http://${sys.env.getOrElse("ES_HOST", "127.0.0.1")}:${sys.env.getOrElse("ES_PORT", "9200")}")))
-  val indexName = "learn2"
+class EmpDaoService(c: => ElasticClient, indexName: String)(implicit ec: ExecutionContext) {
+  lazy val client = c
 
   def insert(e: Employee): Future[String] = {
     client.execute {
@@ -48,7 +47,7 @@ class EmpDaoService(implicit ec: ExecutionContext) {
 
   def updateByQ(q: String, script: String): Future[Long] = {
     client.execute {
-      updateByQuery(indexName, stringQuery(q)).script(script)
+      updateByQuery(indexName, stringQuery(q)).script(script).refreshImmediately
     }.collect(handleError.orElse({
       case results: RequestSuccess[UpdateByQueryResponse] => results.result.updated
     })).mapTo[Long]

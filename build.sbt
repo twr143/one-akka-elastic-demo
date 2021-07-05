@@ -35,7 +35,7 @@ lazy val dao = project
   .settings(
     name := "dao",
     settings,
-    libraryDependencies ++= commonDependencies ++ Seq(deps.e4s)
+    libraryDependencies ++= commonDependencies ++ Seq(deps.e4s,deps.e4st)
   )
   .dependsOn(
     common
@@ -62,6 +62,8 @@ lazy val deps =
 
     val scalatest = "org.scalatest" %% "scalatest" % scalatestV
     val scalacheck = "org.scalacheck" %% "scalacheck" % scalacheckV
+    val akkaHttpTestkit = "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpV
+    val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaV
     val akkaSprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV
     val e4s = "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion
     val e4st = "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test"
@@ -77,7 +79,9 @@ lazy val commonDependencies = Seq(
   deps.scalatest % "test",
   deps.scalacheck % "test",
   deps.scalaReflect,
-  deps.akkaSprayJson
+  deps.akkaSprayJson,
+  deps.akkaTestkit % "test",
+  deps.akkaHttpTestkit % "test"
 )
 
 // SETTINGS

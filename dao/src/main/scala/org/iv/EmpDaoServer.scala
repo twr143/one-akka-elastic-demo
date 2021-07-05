@@ -9,7 +9,10 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.{Directives, ExceptionHandler}
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.HttpResponse
+import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties}
+import com.sksamuel.elastic4s.http.JavaClient
 import org.iv.validation.Validator
+
 import scala.io.StdIn
 import org.iv.JsonSupport._
 
@@ -61,7 +64,7 @@ object EmpDaoServer extends Directives {
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem()
     implicit val executionContext = system.dispatcher
-    val service = new EmpDaoService()
+    val service = new EmpDaoService(ElasticClient(JavaClient(ElasticProperties("http://localhost:9200"))),"learn2")
     val bindingFuture = Http().newServerAt("localhost", 8081).bind(route(service))
     println(s"Emp Dao server online at http://localhost:8081/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
