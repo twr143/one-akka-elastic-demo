@@ -3,8 +3,7 @@ package org.iv.util
 /**
  * Created by twr143 on 02.07.2021 at 13:07.
  */
-
-import scala.language.experimental.macros
+
 import scala.reflect.macros.whitebox.Context
 
 trait Mappable[T] {

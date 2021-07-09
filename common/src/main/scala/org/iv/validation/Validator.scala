@@ -16,10 +16,10 @@ object Validator {
   }
 
   def validateDfsdate(date: String): Boolean = try {
-    val a = java.time.LocalDate.parse(date, java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    java.time.LocalDate.parse(date, java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     true
   } catch {
-    case ex: java.time.format.DateTimeParseException => {
+    case _: java.time.format.DateTimeParseException => {
       false
     }
   }

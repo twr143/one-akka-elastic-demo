@@ -103,8 +103,8 @@ lazy val compilerOptions = Seq(
   "-deprecation",
   "-encoding",
   "utf8",
-  "-Yrangepos"//, // required by SemanticDB compiler plugin
-//  "-Ywarn-unused-import" // required by `RemoveUnused` rule
+  "-Yrangepos", // required by SemanticDB compiler plugin
+  "-Wunused" // required by `RemoveUnused` rule
 )
 
 lazy val commonSettings = Seq(
