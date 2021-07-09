@@ -29,7 +29,7 @@ class ClientServiceTest extends AnyWordSpec with MockFactory with Matchers with 
   "client layer" should {
     "create employee" in {
       val resp = HttpResponse(OK, entity = HttpEntity(ContentTypes.`application/json`, CreateResponse("created").toJson.toString))
-      mockSendRequest.expects(where { r: HttpRequest => r.uri.toString.endsWith("create") }).onCall({ _ => Future.successful(resp) })
+      mockSendRequest.expects(where { r: HttpRequest => r.uri.toString.endsWith("create") }).onCall({ _:Any => Future.successful(resp) })
       Post("/create", EmployeeJson("igor", "2021-07-05T03:12:13")) ~> r ~> check {
         responseAs[CreateResponse].result shouldEqual "created"
       }
@@ -41,21 +41,21 @@ class ClientServiceTest extends AnyWordSpec with MockFactory with Matchers with 
     }
     "list employees by query" in {
       val resp = HttpResponse(OK, entity = HttpEntity(ContentTypes.`application/json`, QueryResponse(List(Employee("", ""))).toJson.toString))
-      mockSendRequest.expects(where { r: HttpRequest => r.uri.toString.endsWith("query") }).onCall({ _ => Future.successful(resp) })
+      mockSendRequest.expects(where { r: HttpRequest => r.uri.toString.endsWith("query") }).onCall({ _:Any => Future.successful(resp) })
       Post("/query", QueryJson("name:*")) ~> r ~> check {
         responseAs[QueryResponse].records.size shouldEqual 1
       }
     }
     "update by query" in {
       val resp = HttpResponse(OK, entity = HttpEntity(ContentTypes.`application/json`, UpdateDeleteResponse(2).toJson.toString))
-      mockSendRequest.expects(where { r: HttpRequest => r.uri.toString.endsWith("update") }).onCall({ _ => Future.successful(resp) })
+      mockSendRequest.expects(where { r: HttpRequest => r.uri.toString.endsWith("update") }).onCall({ _:Any => Future.successful(resp) })
       Post("/update", UpdateJson("name:*", "")) ~> r ~> check {
         responseAs[UpdateDeleteResponse].numRecords shouldEqual 2
       }
     }
     "delete by query" in {
       val resp = HttpResponse(OK, entity = HttpEntity(ContentTypes.`application/json`, UpdateDeleteResponse(2).toJson.toString))
-      mockSendRequest.expects(where { r: HttpRequest => r.uri.toString.endsWith("delete") }).onCall(_ => Future.successful(resp))
+      mockSendRequest.expects(where { r: HttpRequest => r.uri.toString.endsWith("delete") }).onCall({_:Any => Future.successful(resp)})
       Post("/delete", DeleteJson("name:*")) ~> r ~> check {
         responseAs[UpdateDeleteResponse].numRecords shouldEqual 2
       }

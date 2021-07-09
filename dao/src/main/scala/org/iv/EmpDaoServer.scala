@@ -28,7 +28,7 @@ object EmpDaoServer extends Directives {
               if (errors.nonEmpty)
                 complete(BadRequest, errors)
               else
-                onSuccess(service.create(e.toEmployee))(r => complete(OK, CreateResponse(r)))
+                onSuccess(service.create(e.toEmployee()))(r => complete(OK, CreateResponse(r)))
             }
           },
           path("query") {

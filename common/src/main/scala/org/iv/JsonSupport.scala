@@ -5,20 +5,22 @@ import org.iv.model.Employee
 import spray.json.DefaultJsonProtocol
 import validation.Validator._
 
+import scala.annotation.nowarn
+
 /**
  * Created by twr143 on 03.07.2021 at 8:31.
  */
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
-  final case class EmployeeJson(name: String, joined: String) {
+  @nowarn final case class EmployeeJson(name: String, joined: String) {
     def toEmployee() = Employee(name, joined)
   }
-  final case class QueryJson(query: String)
-  final case class DeleteJson(query: String)
-  final case class UpdateJson(query: String, script: String)
-  final case class QueryResponse(records: List[Employee])
-  final case class UpdateDeleteResponse(numRecords: Long)
-  final case class CreateResponse(result: String)
+  @nowarn final case class QueryJson(query: String)
+  @nowarn final case class DeleteJson(query: String)
+  @nowarn final case class UpdateJson(query: String, script: String)
+  @nowarn final case class QueryResponse(records: List[Employee])
+  @nowarn final case class UpdateDeleteResponse(numRecords: Long)
+  @nowarn final case class CreateResponse(result: String)
 
   implicit val employeeFormat = jsonFormat2(EmployeeJson)
   implicit val employeeBeanFormat = jsonFormat2(Employee)

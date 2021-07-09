@@ -21,15 +21,15 @@ object Mappable {
     val tpe = weakTypeOf[T]
     val companion = tpe.typeSymbol.companion
     val fields = tpe.decls.collectFirst {
-      case m: MethodSymbol if m.isPrimaryConstructor ⇒ m
+      case m: MethodSymbol if m.isPrimaryConstructor => m
     }.get.paramLists.head
 
-    val (toMapParams, fromMapParams) = fields.map { field ⇒
+    val (toMapParams, fromMapParams) = fields.map { field =>
       val name = field.asTerm.name
       val decoded = name.decodedName.toString
       val returnType = tpe.decl(name).typeSignature
 
-      (q"$decoded → t.$name", q"map($decoded).asInstanceOf[$returnType]")
+      (q"$decoded -> t.$name", q"map($decoded).asInstanceOf[$returnType]")
     }.unzip
 
     c.Expr[Mappable[T]] {

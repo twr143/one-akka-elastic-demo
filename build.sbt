@@ -1,6 +1,7 @@
 name := "one-akka-elastic-demo"
 organization in ThisBuild := "org.iv"
-scalaVersion in ThisBuild := "2.12.10"
+val scalaV = "2.13.6"
+scalaVersion in ThisBuild := scalaV
 version := "0.1"
 
 // PROJECTS
@@ -50,8 +51,8 @@ lazy val deps =
     val typesafeConfigV = "1.3.1"
     val akkaHttpV = "10.2.4"
     val akkaV = "2.6.13"
-    val scalatestV = "3.1.2"
-    val scalacheckV = "1.13.5"
+    val scalatestV = "3.2.9"
+    val scalacheckV = "1.15.2"
     val elastic4sVersion = "7.12.3"
 
     val logback = "ch.qos.logback" % "logback-classic" % logbackV
@@ -67,8 +68,9 @@ lazy val deps =
     val akkaSprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV
     val e4s = "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion
     val e4st = "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test"
-    val scalaReflect = "org.scala-lang" % "scala-reflect" % "2.12.10"
-    val scalaMock = "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0" % "test"
+    val scalaReflect = "org.scala-lang" % "scala-reflect" % scalaV
+    val scalaMock = "org.scalamock" %% "scalamock" % "5.1.0" % Test
+
   }
 
 lazy val commonDependencies = Seq(
@@ -101,8 +103,8 @@ lazy val compilerOptions = Seq(
   "-deprecation",
   "-encoding",
   "utf8",
-  "-Yrangepos", // required by SemanticDB compiler plugin
-  "-Ywarn-unused-import" // required by `RemoveUnused` rule
+  "-Yrangepos"//, // required by SemanticDB compiler plugin
+//  "-Ywarn-unused-import" // required by `RemoveUnused` rule
 )
 
 lazy val commonSettings = Seq(
@@ -112,7 +114,8 @@ lazy val commonSettings = Seq(
   resolvers ++= Seq(
     "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
     Resolver.sonatypeRepo("releases"),
-    Resolver.sonatypeRepo("snapshots")
+    Resolver.sonatypeRepo("snapshots"),
+    "scala reflect " at "https://mvnrepository.com/artifact/"
   )
 )
 
