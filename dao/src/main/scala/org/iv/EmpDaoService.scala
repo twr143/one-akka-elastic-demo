@@ -41,13 +41,13 @@ class EmpDaoService(c: => ElasticClient, indexName: String)(implicit ec: Executi
       search(indexName).query(q)
     }.collect(handleError.orElse({
       case results: RequestSuccess[SearchResponse] => results.result.hits.hits.map(_.sourceAsMap)
-        .toList.map(Materializer.cmon[Employee])
+        .toList.map(Materializer.fromMap[Employee])
     })).mapTo[List[Employee]]
   }
 
-  def updateByQ(q: String, script: String): Future[Long] = {
+  def updateByQ(query: String, script: String): Future[Long] = {
     client.execute {
-      updateByQuery(indexName, stringQuery(q)).script(script).refreshImmediately
+      updateByQuery(indexName, stringQuery(query)).script(script).refreshImmediately
     }.collect(handleError.orElse({
       case results: RequestSuccess[UpdateByQueryResponse] => results.result.updated
     })).mapTo[Long]
