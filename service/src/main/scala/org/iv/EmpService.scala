@@ -34,7 +34,7 @@ class EmpService(client: HttpExt, uri: String)(implicit ec: ExecutionContext, sy
   }
 
   private def executeRequest: HttpRequest => Future[HttpResponse] =
-    send(_).recover(recoverPf)
+    a => Future.successful{ throw new RuntimeException("123")}
 }
 object EmpService {
   def mkRequest(jv: JsValue, uri: String, uripath: String) =
